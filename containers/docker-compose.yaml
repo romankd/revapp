@@ -14,7 +14,7 @@ services:
   mongodb:
     image: mongo:5.0.2
     restart: unless-stopped
-    #env_file: ./.env
+    env_file: ./.env
     networks:
       - app-network
     environment:
@@ -30,7 +30,7 @@ services:
   
   mongo_migration_client:
     image: mongo:5.0.2
-    #env_file: ./.env
+    env_file: ./.env
     networks:
         - app-network
     command: mongosh --host mongodb -u $MONGODB_ADMIN_USER -p $MONGODB_ADMIN_PASSWORD init_db --authenticationDatabase admin --eval "db.getSiblingDB('$MONGODB_DATABASE').createUser({user:'$MONGODB_USER', pwd:'$MONGODB_PASSWORD', roles:[{role:'readWrite',db:'$MONGODB_DATABASE'}]});"
@@ -48,7 +48,7 @@ services:
         condition: service_healthy
     #build: ./app
     restart: unless-stopped
-    #env_file: ./.env
+    env_file: ./.env
     networks:
       - app-network
     ports:

@@ -43,18 +43,7 @@ jobs:
     
     - name: Docker compose up
       if: ${{ success() }}
-      run: |
-        docker compose up \
-          --env APP_IMAGE_TAG=romankd/nodeapp:${{ github.run_id }} \
-          --env MONGODB_LOCAL_PORT=27017 \
-          --env MONGODB_DOCKER_PORT=27017 \
-          --env MONGODB_DATABASE=users \
-          --env MONGODB_USER=${{ secrets.MONGODB_USER }} \
-          --env MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }} \
-          --env NODE_LOCAL_PORT=3000 \
-          --env NODE_DOCKER_PORT=3000 \
-          --env MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
-          --env MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }}
+      run: docker compose up
     
     # - name: Compose the services
     #   uses: adambirds/docker-compose-action@v1.3.0
