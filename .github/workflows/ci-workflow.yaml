@@ -43,7 +43,7 @@ jobs:
     
     - name: Docker compose up
       if: ${{ success() }}
-      run: docker compose up
+      run: docker compose -f ./containers/docker-compose.yaml
     
     # - name: Compose the services
     #   uses: adambirds/docker-compose-action@v1.3.0
