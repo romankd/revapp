@@ -64,3 +64,4 @@ services:
 networks:
   app-network:
     name: app-network
+    driver: overlay
