@@ -54,7 +54,7 @@ jobs:
         NODE_DOCKER_PORT=3000 \
         MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
         MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
-        docker compose -f ./containers/docker-compose.yaml up
+        docker compose -f ./containers/docker-compose.yaml up -d
 
     
     # - name: Compose the services
@@ -79,6 +79,13 @@ jobs:
     - name: Running tests in Docker
       if: ${{ success() }}
       run: docker exec nodeapp npm test
+
+    - name: Stopping Docker compose
+      if: ${{ success() }}
+      run: docker compose -f ./containers/docker-compose.yaml down --volumes
+
+
+      
 
     # - name: Docker image build
     #   if: ${{ success() }}
