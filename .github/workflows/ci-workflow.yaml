@@ -44,18 +44,17 @@ jobs:
     - name: Docker compose up
       if: ${{ success() }}
       run: |
-        docker compose -f ./containers/docker-compose.yaml \
-          --env APP_IMAGE_TAG=romankd/nodeapp:${{ github.run_id }} \
-          --env MONGODB_LOCAL_PORT=27017 \
-          --env MONGODB_DOCKER_PORT=27017 \
-          --env MONGODB_DATABASE=users \
-          --env MONGODB_USER=${{ secrets.MONGODB_USER }} \
-          --env MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }} \
-          --env NODE_LOCAL_PORT=3000 \
-          --env NODE_DOCKER_PORT=3000 \
-          --env MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
-          --env MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
-          up
+        APP_IMAGE_TAG=romankd/nodeapp:${{ github.run_id }} \
+        MONGODB_LOCAL_PORT=27017 \
+        MONGODB_DOCKER_PORT=27017 \
+        MONGODB_DATABASE=users \
+        MONGODB_USER=${{ secrets.MONGODB_USER }} \
+        MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }} \
+        NODE_LOCAL_PORT=3000 \
+        NODE_DOCKER_PORT=3000 \
+        MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
+        MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
+        docker compose -f ./containers/docker-compose.yaml up
 
     
     # - name: Compose the services
