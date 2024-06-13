@@ -1,3 +1,4 @@
 export
 npm_modules
 containers/.envdev
+containers/.env
