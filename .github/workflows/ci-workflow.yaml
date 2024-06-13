@@ -38,8 +38,8 @@ jobs:
       with:
         compose-file: "./containers/docker-compose.yaml"
         down-flags: "--volumes"
-        test-container: nodeapp
-        test-command: "npm test"
+        # test-container: nodeapp
+        # test-command: "npm test"
       env:
         #NODE_ENV: "dev"
         MONGODB_LOCAL_PORT: 27017
@@ -51,6 +51,9 @@ jobs:
         NODE_DOCKER_PORT: 3000
         MONGODB_ADMIN_USER: ${{ secrets.MONGODB_ADMIN_USER }}
         MONGODB_ADMIN_PASSWORD: ${{ secrets.MONGODB_ADMIN_PASSWORD }}
+    
+    - name: Running tests in Docker
+      run: docker exec -it nodeapp npm test
 
     # - name: Docker image build
     #   if: ${{ success() }}
