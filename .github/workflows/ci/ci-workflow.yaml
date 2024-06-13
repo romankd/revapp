@@ -8,8 +8,8 @@ on:
 
 env:
   CACHE_PATH: /tmp/.buildx-cache
-  TRIVY_CACHE_PATH: /tmp/.trivy-cache
-  TRIVY_IMAGE_VERSION: 0.49.1
+  # TRIVY_CACHE_PATH: /tmp/.trivy-cache
+  # TRIVY_IMAGE_VERSION: 0.49.1
 
 jobs:
   build:
@@ -40,8 +40,17 @@ jobs:
         down-flags: "--volumes"
         test-container: nodeapp
         test-command: "npm test"
-      # env:
-      #   NODE_ENV: "test"
+      env:
+        #NODE_ENV: "dev"
+        MONGODB_LOCAL_PORT: 27017
+        MONGODB_DOCKER_PORT: 27017
+        MONGODB_DATABASE: users
+        MONGODB_USER: mongouser
+        MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+        NODE_LOCAL_PORT: 3000
+        NODE_DOCKER_PORT: 3000
+        MONGODB_ADMIN_USER: ${{ secrets.MONGODB_ADMIN_USER }}
+        MONGODB_ADMIN_PASSWORD: ${{ secrets.MONGODB_ADMIN_PASSWORD }}
 
     # - name: Docker image build
     #   if: ${{ success() }}
