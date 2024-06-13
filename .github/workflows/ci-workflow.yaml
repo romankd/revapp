@@ -45,7 +45,7 @@ jobs:
         MONGODB_LOCAL_PORT: 27017
         MONGODB_DOCKER_PORT: 27017
         MONGODB_DATABASE: users
-        MONGODB_USER: mongouser
+        MONGODB_USER: ${{ secrets.MONGODB_USER }}
         MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
         NODE_LOCAL_PORT: 3000
         NODE_DOCKER_PORT: 3000
