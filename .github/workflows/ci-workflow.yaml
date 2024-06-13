@@ -53,7 +53,7 @@ jobs:
         MONGODB_ADMIN_PASSWORD: ${{ secrets.MONGODB_ADMIN_PASSWORD }}
     
     - name: Running tests in Docker
-      run: docker exec -it nodeapp npm test
+      run: docker exec nodeapp npm test
 
     # - name: Docker image build
     #   if: ${{ success() }}
