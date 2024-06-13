@@ -39,13 +39,14 @@ services:
         condition: service_healthy
 
   app:
+    image: $APP_IMAGE_TAG
     container_name: nodeapp
     depends_on:
       mongo_migration_client:
         condition: service_completed_successfully
       mongodb:
         condition: service_healthy
-    build: ./app
+    #build: ./app
     restart: unless-stopped
     #env_file: ./.env
     networks:
@@ -58,7 +59,7 @@ services:
       DB_PASSWORD: $MONGODB_PASSWORD
       DB_NAME: $MONGODB_DATABASE
       DB_PORT: $MONGODB_DOCKER_PORT
-    stdin_open: true
+    #stdin_open: true
     #tty: true
 
 networks:
