@@ -42,6 +42,9 @@ jobs:
     #       --cache-from=type=local,src=${{ env.CACHE_PATH }} \
     #       -f ./containers/app/Dockerfile ./containers/app
 
+    - name: Cleaning volumes
+      run: docker volume prune -f
+
     - name: Docker image build
       if: ${{ success() }}
       run: |
@@ -101,7 +104,7 @@ jobs:
     #   if: success()
     #   run: docker push ${{ env.APP_IMAGE }}
 
-    - name: Stopping Docker compose
+    - name: Cleaning volumes
       run: docker volume prune -f
     
     # - name: Sending results of failure to slack
