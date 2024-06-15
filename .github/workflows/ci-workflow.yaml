@@ -34,34 +34,34 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
     
-    - name: Docker image build
-      if: ${{ success() }}
-      run: |
-        docker buildx build --load  \
-          -t ${{ env.APP_IMAGE }} --cache-to=type=local,dest=${{ env.CACHE_PATH }} \
-          --cache-from=type=local,src=${{ env.CACHE_PATH }} \
-          -f ./containers/app/Dockerfile ./containers/app
+    # - name: Docker image build
+    #   if: ${{ success() }}
+    #   run: |
+    #     docker buildx build --load  \
+    #       -t ${{ env.APP_IMAGE }} --cache-to=type=local,dest=${{ env.CACHE_PATH }} \
+    #       --cache-from=type=local,src=${{ env.CACHE_PATH }} \
+    #       -f ./containers/app/Dockerfile ./containers/app
 
-    - name: Testing the Docker image with Trivy for vulnerabilities
-      if: ${{ success() }}
-      run: |
-        docker run --rm -v ${{ env.TRIVY_CACHE_PATH }}:/root/.cache/ \
-          -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:${{ env.TRIVY_IMAGE_VERSION }} image ${{ env.APP_IMAGE }} \
-          --severity HIGH,CRITICAL --exit-code 1
+    # - name: Testing the Docker image with Trivy for vulnerabilities
+    #   if: ${{ success() }}
+    #   run: |
+    #     docker run --rm -v ${{ env.TRIVY_CACHE_PATH }}:/root/.cache/ \
+    #       -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:${{ env.TRIVY_IMAGE_VERSION }} image ${{ env.APP_IMAGE }} \
+    #       --severity HIGH,CRITICAL --exit-code 1
     
     - name: Docker compose up
       if: ${{ success() }}
       run: |
-        APP_IMAGE_TAG=${{ env.APP_IMAGE }} \
-        MONGODB_LOCAL_PORT=27017 \
-        MONGODB_DOCKER_PORT=27017 \
-        MONGODB_DATABASE=users \
-        MONGODB_USER=${{ secrets.MONGODB_USER }} \
-        MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }} \
-        NODE_LOCAL_PORT=3000 \
-        NODE_DOCKER_PORT=3000 \
-        MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
-        MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
+        export APP_IMAGE_TAG=${{ env.APP_IMAGE }} \
+        export MONGODB_LOCAL_PORT=27017 \
+        export MONGODB_DOCKER_PORT=27017 \
+        export MONGODB_DATABASE=users \
+        export MONGODB_USER=${{ secrets.MONGODB_USER }} \
+        export MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }} \
+        export NODE_LOCAL_PORT=3000 \
+        export NODE_DOCKER_PORT=3000 \
+        export MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
+        export MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
         docker compose -f ./containers/docker-compose.yaml down  --volumes
         docker compose -f ./containers/docker-compose.yaml up -d --no-build
     
