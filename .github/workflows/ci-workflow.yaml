@@ -93,8 +93,10 @@ jobs:
     - name: Push the Docker image
       if: success()
       run: docker push ${{ env.APP_IMAGE }}
-    
 
+    - name: Stopping Docker compose
+      run: docker volume prune -f
+    
     # - name: Sending results of failure to slack
     #   if: failure()
     #   id: slack
