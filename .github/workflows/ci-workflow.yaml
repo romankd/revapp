@@ -62,6 +62,7 @@ jobs:
         NODE_DOCKER_PORT=3000 \
         MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
         MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
+        docker compose -f ./containers/docker-compose.yaml down  --volumes
         docker compose -f ./containers/docker-compose.yaml up -d --no-build
     
     - name: Running tests in Docker
