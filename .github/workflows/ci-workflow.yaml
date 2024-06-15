@@ -52,16 +52,16 @@ jobs:
     - name: Docker compose up
       if: ${{ success() }}
       run: |
-        export APP_IMAGE_TAG=${{ env.APP_IMAGE }} \
-        export MONGODB_LOCAL_PORT=27017 \
-        export MONGODB_DOCKER_PORT=27017 \
-        export MONGODB_DATABASE=users \
-        export MONGODB_USER=${{ secrets.MONGODB_USER }} \
-        export MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }} \
-        export NODE_LOCAL_PORT=3000 \
-        export NODE_DOCKER_PORT=3000 \
-        export MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
-        export MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
+        APP_IMAGE_TAG=${{ env.APP_IMAGE }} \
+        MONGODB_LOCAL_PORT=27017 \
+        MONGODB_DOCKER_PORT=27017 \
+        MONGODB_DATABASE=users \
+        MONGODB_USER=${{ secrets.MONGODB_USER }} \
+        MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }} \
+        NODE_LOCAL_PORT=3000 \
+        NODE_DOCKER_PORT=3000 \
+        MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
+        MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
         docker compose -f ./containers/docker-compose.yaml up -d --no-build
     
     - name: Running tests in Docker
