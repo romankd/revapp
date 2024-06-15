@@ -21,7 +21,7 @@ services:
     image: mongo:7.0.11
     networks:
         - app-network
-    command: mongosh --host mongodb -u $MONGODB_ADMIN_USER -p $MONGODB_ADMIN_PASSWORD init_db --authenticationDatabase admin --eval "db.getSiblingDB('$MONGODB_DATABASE').createUser({user:'$MONGODB_USER', pwd:'$MONGODB_PASSWORD', roles:[{role:'readWrite',db:'$MONGODB_DATABASE'}]});"
+    command: mongosh --quiet --host mongodb -u $MONGODB_ADMIN_USER -p $MONGODB_ADMIN_PASSWORD admin --authenticationDatabase admin --eval "if (db.system.users.find({user:'$MONGODB_USER'}).count() == 0) { db.getSiblingDB('$MONGODB_DATABASE').createUser({user:'$MONGODB_USER', pwd:'$MONGODB_PASSWORD', roles:[{role:'readWrite', db:'$MONGODB_DATABASE'}]});  }"
     depends_on:
       mongodb:
         condition: service_healthy
