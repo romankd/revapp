@@ -37,8 +37,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: DB_PORT
+              value: "{{ .Values.mongo.port }}"
             - name: DB_HOST
-              value: {{ .Values.mongoPath }}
+              value: {{ .Values.mongo.path }}
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:

@@ -1,15 +1,13 @@
 replicaCount: 2
 
 image:
-  repository: nginx
+  repository: romankd/revapp
   pullPolicy: IfNotPresent
-  tag: "latest"
+  tag: "9530578215"
 
-mongoPath: "mongo-0.mongo.dev.svc.cluster.local:27017"
-
-#imagePullSecrets: []
-# nameOverride: ""
-# fullnameOverride: ""
+mongo:
+  path: "mongo-0.mongo.dev.svc.cluster.local"
+  port: "27017"
 
 serviceAccount:
   create: true
@@ -21,15 +19,16 @@ podLabels: {}
 
 selectorLabels:
   app: nodejs
-# securityContext:
-#   runAsNonRoot: true
-#   runAsUser: 1001
-#   allowPrivilegeEscalation: false
+
+securityContext:
+  runAsRoot: false
+  runAsUser: 100
+  allowPrivilegeEscalation: false
 
 service:
   type: ClusterIP
-  port: 80
-  targetPort: 80
+  port: 3000
+  targetPort: 3000
   
 labels:
   app: nodejs
@@ -48,35 +47,35 @@ ingress:
           service:
             name: nodeapp
             port:
-              number: 80
+              number: 3000
   tls: []
 
 resources: 
   limits:
-    cpu: 150m
-    memory: 128Mi
+    cpu: 300m
+    memory: 512Mi
   requests:
-    cpu: 100m
-    memory: 64Mi
+    cpu: 200m
+    memory: 256Mi
 
-# livenessProbe:
-#   httpGet:
-#     path: /health
-#     port: 3000
-#   initialDelaySeconds: 15
-#   timeoutSeconds: 1
-#   periodSeconds: 30
-#   failureThreshold: 3
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 3000
+  initialDelaySeconds: 15
+  timeoutSeconds: 1
+  periodSeconds: 30
+  failureThreshold: 3
   
-# readinessProbe:
-#   httpGet:
-#     port: 3000
-#     path: /ready
-#   initialDelaySeconds: 15
-#   timeoutSeconds: 1
-#   periodSeconds: 10
-#   successThreshold: 3
-#   failureThreshold: 3
+readinessProbe:
+  httpGet:
+    port: 3000
+    path: /ready
+  initialDelaySeconds: 15
+  timeoutSeconds: 1
+  periodSeconds: 10
+  successThreshold: 3
+  failureThreshold: 3
 
 autoscaling:
   enabled: true

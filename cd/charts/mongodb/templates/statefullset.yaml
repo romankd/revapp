@@ -18,12 +18,19 @@ spec:
     spec:
       securityContext:
         runAsRoot: false
-        # runAsUser: 1000
-        # runAsGroup: 1000
-        # fsGroup: 2000
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 2000
       containers:
         - name: mongo-sidecar
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          resources:
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
           securityContext:
             allowPrivilegeEscalation: false
           volumeMounts:
@@ -60,6 +67,8 @@ spec:
         - name: mongo
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           startupProbe:
             exec:
               command:
@@ -140,4 +149,4 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: 1Gi
+            storage: 500Mi

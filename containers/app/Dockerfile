@@ -18,7 +18,7 @@ ENV APP_PORT=$app_port
 ARG app_host=0.0.0.0
 ENV APP_HOST=$app_host
 
-#USER node
+USER node
 COPY --from=builder /nodeapp /nodeapp
 WORKDIR /nodeapp
 
