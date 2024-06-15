@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   mongodb:
-    image: mongo:7.0
+    image: mongo:5.0.2
     restart: unless-stopped
     networks:
       - app-network
@@ -18,11 +18,10 @@ services:
         retries: 10
   
   mongo_migration_client:
-    image: mongo:7.0
+    image: mongo:5.0.2
     networks:
         - app-network
-    command: |
-      sleep 5 && mongosh --host mongodb -u $MONGODB_ADMIN_USER -p $MONGODB_ADMIN_PASSWORD init_db --authenticationDatabase admin --eval "db.getSiblingDB('$MONGODB_DATABASE').createUser({user:'$MONGODB_USER', pwd:'$MONGODB_PASSWORD', roles:[{role:'readWrite',db:'$MONGODB_DATABASE'}]});"
+    command: mongosh --host mongodb -u $MONGODB_ADMIN_USER -p $MONGODB_ADMIN_PASSWORD init_db --authenticationDatabase admin --eval "db.getSiblingDB('$MONGODB_DATABASE').createUser({user:'$MONGODB_USER', pwd:'$MONGODB_PASSWORD', roles:[{role:'readWrite',db:'$MONGODB_DATABASE'}]});"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -30,12 +29,12 @@ services:
   app:
     image: $APP_IMAGE_TAG
     container_name: nodeapp
-    build: ./app
     depends_on:
       mongo_migration_client:
         condition: service_completed_successfully
       mongodb:
         condition: service_healthy
+    build: ./app
     restart: unless-stopped
     networks:
       - app-network
