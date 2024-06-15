@@ -24,15 +24,15 @@ jobs:
       with:
         version: v0.13.1
 
-    - name: Cache Docker
-      id: cache_docker
-      if: ${{ success() }}
-      uses: actions/cache@v4
-      with:
-        path: ${{ env.CACHE_PATH }}
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
+    # - name: Cache Docker
+    #   id: cache_docker
+    #   if: ${{ success() }}
+    #   uses: actions/cache@v4
+    #   with:
+    #     path: ${{ env.CACHE_PATH }}
+    #     key: ${{ runner.os }}-buildx-${{ github.sha }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-buildx-
     
     # - name: Docker image build
     #   if: ${{ success() }}
@@ -62,7 +62,6 @@ jobs:
         export NODE_DOCKER_PORT=3000 \
         export MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
         export MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
-        docker compose -f ./containers/docker-compose.yaml down  --volumes
         docker compose -f ./containers/docker-compose.yaml up -d --no-build
     
     - name: Running tests in Docker
