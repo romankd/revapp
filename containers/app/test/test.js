@@ -8,7 +8,8 @@ const UserModel = require('../models/user.cjs');
 const dbConfig = require('../configs/database.cjs')
 var random_name = require('node-random-name');
 
-const url = 'http://localhost:3000/hello/'
+const base = 'http://localhost:3000/'
+const url = base + 'hello/'
 
 mongoose.connect(dbConfig.url)
     .catch((error) => console.error('MongoDB connection error:', error));
@@ -225,3 +226,18 @@ describe('Testing GET bday days.', () => {
     });
 });
 
+describe('Testing readiness & health probe', () => {
+    it('testing liveness', function(done) {
+        request.get(base + "health", function(error, res, body) {
+            expect(res.statusCode).to.equal(200);
+            done();
+        });
+    });
+    
+    it('Testing readiness', function(done) {
+        request.get(base + "ready", function(error, res, body) {
+            expect(res.statusCode).to.equal(200);
+            done();
+        });
+    }); 
+});

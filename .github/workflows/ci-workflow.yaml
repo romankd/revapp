@@ -8,8 +8,9 @@ on:
 
 env:
   CACHE_PATH: /tmp/.buildx-cache
-  # TRIVY_CACHE_PATH: /tmp/.trivy-cache
-  # TRIVY_IMAGE_VERSION: 0.49.1
+  TRIVY_CACHE_PATH: /tmp/.trivy-cache
+  TRIVY_IMAGE_VERSION: 0.49.1
+  APP_IMAGE: romankd/revapp:${{ github.run_id }}
 
 jobs:
   build:
@@ -37,14 +38,21 @@ jobs:
       if: ${{ success() }}
       run: |
         docker buildx build --load  \
-          -t romankd/nodeapp:${{ github.run_id }} --cache-to=type=local,dest=${{ env.CACHE_PATH }} \
+          -t ${{ env.APP_IMAGE }} --cache-to=type=local,dest=${{ env.CACHE_PATH }} \
           --cache-from=type=local,src=${{ env.CACHE_PATH }} \
           -f ./containers/app/Dockerfile ./containers/app
+
+    - name: Testing the Docker image with Trivy for vulnerabilities
+      if: ${{ success() }}
+      run: |
+        docker run --rm -v ${{ env.TRIVY_CACHE_PATH }}:/root/.cache/ \
+          -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:${{ env.TRIVY_IMAGE_VERSION }} image ${{ env.APP_IMAGE }} \
+          --severity HIGH,CRITICAL --exit-code 1
     
     - name: Docker compose up
       if: ${{ success() }}
       run: |
-        APP_IMAGE_TAG=romankd/nodeapp:${{ github.run_id }} \
+        APP_IMAGE_TAG=${{ env.APP_IMAGE }} \
         MONGODB_LOCAL_PORT=27017 \
         MONGODB_DOCKER_PORT=27017 \
         MONGODB_DATABASE=users \
@@ -54,7 +62,7 @@ jobs:
         NODE_DOCKER_PORT=3000 \
         MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
         MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
-        docker compose -f ./containers/docker-compose.yaml up -d
+        docker compose -f ./containers/docker-compose.yaml up -d --no-build
     
     - name: Running tests in Docker
       if: ${{ success() }}
@@ -63,7 +71,7 @@ jobs:
     - name: Stopping Docker compose
       if: ${{ success() }}
       run: |
-        APP_IMAGE_TAG=romankd/nodeapp:${{ github.run_id }} \
+        APP_IMAGE_TAG=${{ env.APP_IMAGE }} \
         MONGODB_LOCAL_PORT=27017 \
         MONGODB_DOCKER_PORT=27017 \
         MONGODB_DATABASE=users \
@@ -74,23 +82,6 @@ jobs:
         MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
         MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
         docker compose -f ./containers/docker-compose.yaml down --volumes
-
-
-
-    # - name: Docker image build
-    #   if: ${{ success() }}
-    #   run: |
-    #     docker buildx build --load --build-arg YQ_VERSION=${{ vars.YQ_VERSION }} \
-    #       -t romankd/nodeapp:${{ github.run_id }} --cache-to=type=local,dest=${{ env.CACHE_PATH }} \
-    #       --cache-from=type=local,src=${{ env.CACHE_PATH }} \
-    #       -f ./docker-app/Dockerfile ./docker-app
-
-    # - name: Test the Docker image with Trivy
-    #   if: ${{ success() }}
-    #   run: |
-    #     docker run --rm -v ${{ env.TRIVY_CACHE_PATH }}:/root/.cache/ \
-    #       -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:${{ env.TRIVY_IMAGE_VERSION }} image romankd/zscaler-pyapp:${{ github.run_id }} \
-    #       --severity HIGH,CRITICAL --exit-code 1
     
     # - name: Sending results of failure to slack
     #   if: failure()

@@ -4,6 +4,7 @@ const express = require('express')
 , mongoose = require('mongoose')
 , bodyParser = require('body-parser')
 , userController = require('./controllers/user.cjs')
+, probeController = require('./controllers/probe.cjs')
 , userValidator = require('./validators/user.cjs')
 , dbConfig = require('./configs/database.cjs')
 , hostConfig = require('./configs/host.cjs');
@@ -25,5 +26,10 @@ router.get('/:username', [
   userValidator.validateUsername
 ], userController.findOne);
 
-app.use('/hello', router)
+var router_checks = express.Router();
+router_checks.get('/health', probeController.checkUp);
+router_checks.get('/ready', probeController.checkUp);
+
+app.use('/hello', router);
+app.use('/', router_checks);
 app.listen(hostConfig.port, hostConfig.hostname);

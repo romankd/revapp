@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-config
+  labels:
+    {{- include "mongodb.labels" . | nindent 4 }}
+data:
+  mongo-host: "mongo-0.${SERVICENAME}.${NAMESPACE}.svc.cluster.local"
+  mongodb.conf: |  
+    replication:
+      replSetName: "rs0"
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-boot
+  labels:
+    {{- include "mongodb.labels" . | nindent 4 }}
+immutable: true
+data:
+  initialization.sh: |
+    #!/bin/bash
+    HOST=${HOSTNAME}.${SERVICENAME}.${NAMESPACE}.svc.cluster.local
+    MASTER=mongo-0.${SERVICENAME}.${NAMESPACE}.svc.cluster.local
+
+    until mongosh --eval 'printjson(db.serverStatus())'; do
+        echo "waiting for mongo boot finish."
+        sleep 1
+    done
+
+    if [[ "$HOSTNAME" -ne "mongo-0" ]]; then
+        until mongosh --host ${HOST} --eval 'printjson(rs.status())' 2>&1 | grep "no replset config"; do
+            echo "waiting for mongo boot."
+            sleep 1
+        done
+        echo "registering itself"
+        mongosh --host ${MASTER} --eval "printjson(rs.add('${HOST}'));"
+    fi
+
+    if [[ "$HOSTNAME" -eq  "mongo-0" ]]; then
+        echo "init resplication on primery node"
+        mongosh --host ${HOST} --eval "printjson(rs.initiate({'_id': 'rs0', 'members' : [{'_id': 0, 'host' : '${HOST}'}]}));"
+        mongosh $MONGO_INITDB_DATABASE --eval "db.getSiblingDB('$MONGODB_DATABASE').createUser({user:'$MONGODB_USER', pwd:'$MONGODB_PASSWORD', roles:[{role:'readWrite',db:'$MONGODB_DATABASE'}]});"
+        echo "init finished, ready to accept replicas"
+    fi
+
+    echo "Done."

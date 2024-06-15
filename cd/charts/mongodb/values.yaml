@@ -1,0 +1,51 @@
+replicaCount: 2
+
+image:
+  repository: mongo
+  pullPolicy: Always
+  tag: "7.0"
+
+labels:
+  app: mongo
+  role: database
+  environment: dev
+
+selectorLabels:
+  environment: dev
+  app: mongo
+  role: database
+
+nameOverride: "mongo"
+fullnameOverride: "mongo"
+
+serviceAccount:
+  create: false
+
+service:
+  type: None
+  port: 27017
+
+resources:
+  limits:
+    cpu: 1500m
+    memory: 1024Mi
+  requests:
+    cpu: 1000m
+    memory: 1024Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 4
+  targetMemoryUtilizationPercentage: 80
+
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: ec2type
+            operator: In
+            values:
+            - storageOptimized

@@ -1,0 +1,96 @@
+replicaCount: 2
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+mongoPath: "mongo-0.mongo.dev.svc.cluster.local:27017"
+
+#imagePullSecrets: []
+# nameOverride: ""
+# fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+
+podAnnotations: {}
+podLabels: {}
+
+selectorLabels:
+  app: nodejs
+# securityContext:
+#   runAsNonRoot: true
+#   runAsUser: 1001
+#   allowPrivilegeEscalation: false
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+  
+labels:
+  app: nodejs
+
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: nodeapp.local
+      paths:
+      - pathType: ImplementationSpecific
+        path: /
+        backend:
+          service:
+            name: nodeapp
+            port:
+              number: 80
+  tls: []
+
+resources: 
+  limits:
+    cpu: 150m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+# livenessProbe:
+#   httpGet:
+#     path: /health
+#     port: 3000
+#   initialDelaySeconds: 15
+#   timeoutSeconds: 1
+#   periodSeconds: 30
+#   failureThreshold: 3
+  
+# readinessProbe:
+#   httpGet:
+#     port: 3000
+#     path: /ready
+#   initialDelaySeconds: 15
+#   timeoutSeconds: 1
+#   periodSeconds: 10
+#   successThreshold: 3
+#   failureThreshold: 3
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: ec2type
+            operator: In
+            values:
+            - cpuOptimized
