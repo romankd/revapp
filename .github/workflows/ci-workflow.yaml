@@ -92,7 +92,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
+
     - name: Download artifact
       uses: actions/download-artifact@v4
       with:
@@ -121,6 +121,21 @@ jobs:
       if: ${{ success() }}
       run: docker exec nodeapp npm test
     
+    - name: Stopping Docker compose
+      if: ${{ success() }}
+      run: |
+        APP_IMAGE_TAG=${{ env.APP_IMAGE }} \
+        MONGODB_LOCAL_PORT=27017 \
+        MONGODB_DOCKER_PORT=27017 \
+        MONGODB_DATABASE=users \
+        MONGODB_USER=${{ secrets.MONGODB_USER }} \
+        MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }} \
+        NODE_LOCAL_PORT=3000 \
+        NODE_DOCKER_PORT=3000 \
+        MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
+        MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
+        docker compose -f ./containers/docker-compose.yaml down --volumes
+    
   push:
     runs-on: ubuntu-latest
     needs: test
@@ -144,21 +159,6 @@ jobs:
     - name: Push the Docker image
       if: success()
       run: docker push ${{ env.APP_IMAGE }}
-
-    - name: Stopping Docker compose
-      if: ${{ success() }}
-      run: |
-        APP_IMAGE_TAG=${{ env.APP_IMAGE }} \
-        MONGODB_LOCAL_PORT=27017 \
-        MONGODB_DOCKER_PORT=27017 \
-        MONGODB_DATABASE=users \
-        MONGODB_USER=${{ secrets.MONGODB_USER }} \
-        MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }} \
-        NODE_LOCAL_PORT=3000 \
-        NODE_DOCKER_PORT=3000 \
-        MONGODB_ADMIN_USER=${{ secrets.MONGODB_ADMIN_USER }} \
-        MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
-        docker compose -f ./containers/docker-compose.yaml down --volumes
 
   cleanup:
     runs-on: ubuntu-latest
