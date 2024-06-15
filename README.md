@@ -27,6 +27,7 @@ kubectl create secret generic mongodb-secret \
 
 ```
 
+
 Local setup
 
 
