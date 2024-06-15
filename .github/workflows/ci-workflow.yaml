@@ -19,46 +19,52 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     
-    # - name: Set up Docker Buildx
-    #   uses: docker/setup-buildx-action@v3
-    #   with:
-    #     version: v0.13.1
-
-    # - name: Cache Docker
-    #   id: cache_docker
-    #   if: ${{ success() }}
-    #   uses: actions/cache@v4
-    #   with:
-    #     path: ${{ env.CACHE_PATH }}
-    #     key: ${{ runner.os }}-buildx-${{ github.sha }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-buildx-
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        version: v0.13.1
     
-    # - name: Docker image build
-    #   if: ${{ success() }}
-    #   run: |
-    #     docker buildx build --load  \
-    #       -t ${{ env.APP_IMAGE }} --cache-to=type=local,dest=${{ env.CACHE_PATH }} \
-    #       --cache-from=type=local,src=${{ env.CACHE_PATH }} \
-    #       -f ./containers/app/Dockerfile ./containers/app
-
     - name: Cleaning volumes
       run: docker volume prune -f
 
+    - name: Cache Docker
+      id: cache_docker
+      if: ${{ success() }}
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.CACHE_PATH }}
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+    
     - name: Docker image build
       if: ${{ success() }}
       run: |
-        docker build  \
-          -t ${{ env.APP_IMAGE }} \
+        docker buildx build --load  \
+          -t ${{ env.APP_IMAGE }} --cache-to=type=local,dest=${{ env.CACHE_PATH }} \
+          --cache-from=type=local,src=${{ env.CACHE_PATH }} \
           -f ./containers/app/Dockerfile ./containers/app
 
-    # - name: Testing the Docker image with Trivy for vulnerabilities
+    # - name: Docker image build
     #   if: ${{ success() }}
     #   run: |
-    #     docker run --rm -v ${{ env.TRIVY_CACHE_PATH }}:/root/.cache/ \
-    #       -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:${{ env.TRIVY_IMAGE_VERSION }} image ${{ env.APP_IMAGE }} \
-    #       --severity HIGH,CRITICAL --exit-code 1
-    
+    #     docker build  \
+    #       -t ${{ env.APP_IMAGE }} \
+    #       -f ./containers/app/Dockerfile ./containers/app
+
+  security_check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Testing the Docker image with Trivy for vulnerabilities
+      if: ${{ success() }}
+      run: |
+        docker run --rm -v ${{ env.TRIVY_CACHE_PATH }}:/root/.cache/ \
+          -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:${{ env.TRIVY_IMAGE_VERSION }} image ${{ env.APP_IMAGE }} \
+          --severity HIGH,CRITICAL --exit-code 1
+  
+  test:
+    runs-on: ubuntu-latest
+    steps:
     - name: Docker compose up
       if: ${{ success() }}
       run: |
@@ -85,6 +91,9 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     
+  push:
+    runs-on: ubuntu-latest
+    steps:
     - name: Push the Docker image
       if: success()
       run: docker push ${{ env.APP_IMAGE }}
@@ -104,6 +113,9 @@ jobs:
         MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} \
         docker compose -f ./containers/docker-compose.yaml down --volumes
 
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
     - name: Cleaning volumes
       run: docker volume prune -f
     
