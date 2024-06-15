@@ -14,6 +14,7 @@ env:
 
 jobs:
   build:
+    name: CI
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -27,23 +28,36 @@ jobs:
     - name: Cleaning volumes
       run: docker volume prune -f
 
-    - name: Cache Docker
-      id: cache_docker
-      if: ${{ success() }}
-      uses: actions/cache@v4
-      with:
-        path: ${{ env.CACHE_PATH }}
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
+    # - name: Cache Docker
+    #   id: cache_docker
+    #   if: ${{ success() }}
+    #   uses: actions/cache@v4
+    #   with:
+    #     path: ${{ env.CACHE_PATH }}
+    #     key: ${{ runner.os }}-buildx-${{ github.sha }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-buildx-
     
-    - name: Docker image build
-      if: ${{ success() }}
-      run: |
-        docker buildx build --load  \
-          -t ${{ env.APP_IMAGE }} --cache-to=type=local,dest=${{ env.CACHE_PATH }} \
-          --cache-from=type=local,src=${{ env.CACHE_PATH }} \
-          -f ./containers/app/Dockerfile ./containers/app
+    - name: Build and export
+      uses: docker/build-push-action@v5
+      with:
+        context: ./containers/app
+        tags: ${{ env.APP_IMAGE }}
+        outputs: type=docker,dest=/tmp/appimage.tar
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: appimage
+        path: /tmp/appimage.tar
+    
+    # - name: Docker image build
+    #   if: ${{ success() }}
+    #   run: |
+    #     docker buildx build --load  \
+    #       -t ${{ env.APP_IMAGE }} --cache-to=type=local,dest=${{ env.CACHE_PATH }} \
+    #       --cache-from=type=local,src=${{ env.CACHE_PATH }} \
+    #       -f ./containers/app/Dockerfile ./containers/app
 
     # - name: Docker image build
     #   if: ${{ success() }}
@@ -56,6 +70,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: appimage
+        path: /tmp
+    
+    - name: Load image
+      run: docker load --input /tmp/appimage.tar
+
     - name: Testing the Docker image with Trivy for vulnerabilities
       if: ${{ success() }}
       run: |
@@ -67,6 +90,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: appimage
+        path: /tmp
+    
+    - name: Load image
+      run: docker load --input /tmp/appimage.tar
+      
     - name: Docker compose up
       if: ${{ success() }}
       run: |
@@ -90,6 +122,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: appimage
+        path: /tmp
+    
+    - name: Load image
+      run: docker load --input /tmp/appimage.tar
+      
     - name: Log in to Docker Hub
       if: success()
       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
