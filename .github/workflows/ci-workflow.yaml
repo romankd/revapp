@@ -97,9 +97,9 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     
-    - name: Push the Docker image
-      if: success()
-      run: docker push ${{ env.APP_IMAGE }}
+    # - name: Push the Docker image
+    #   if: success()
+    #   run: docker push ${{ env.APP_IMAGE }}
 
     - name: Stopping Docker compose
       run: docker volume prune -f
