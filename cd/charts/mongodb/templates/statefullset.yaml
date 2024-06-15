@@ -17,6 +17,7 @@ spec:
         {{- include "mongodb.labels" . | nindent 8 }}
     spec:
       securityContext:
+        allowPrivilegeEscalation: false
         runAsRoot: false
         runAsUser: 1000
         runAsGroup: 1000
@@ -25,14 +26,12 @@ spec:
         - name: mongo-sidecar
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           resources:
-          limits:
-            cpu: 200m
-            memory: 128Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi
-          securityContext:
-            allowPrivilegeEscalation: false
+            limits:
+              cpu: 200m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
           volumeMounts:
             - name: mongodb-boot
               mountPath: /opt
