@@ -9,14 +9,6 @@ mongo:
   path: "mongo-0.mongo.dev.svc.cluster.local"
   port: "27017"
 
-serviceAccount:
-  create: true
-  automount: true
-  annotations: {}
-
-podAnnotations: {}
-podLabels: {}
-
 selectorLabels:
   app: nodejs
 
