@@ -1,7 +1,7 @@
 <h3>Summary</h3>
 
 1. Task number 1 is located in the path ./containers/app/ , CI flow is located in .github/workflows/ci-workflow.yaml
-2. Task number 2 is located in the path ./cloudflow.drawio.png
+2. Task number 2 is located in the path ./diagrams/cloudflow.drawio.png
 3. Task number 3 is located in the path ./cd/infra
 
 
@@ -41,11 +41,12 @@ PRE REQS
 2. ingress controller of your choice, I used nginx-ingress in my approach
 3. a basic secret (used for both mongo and application) per environment, use the command below to create it.
 4. run kustomize and kubectl to apply the structure per environment that can be deployed incrementally without downtime (as speciafied in the task)
-5. prod and dev have a different configuration
+5. prod and dev have a different configuration.
 6. ideal finish for this part would have been a terraform deploy to k8s cluster using k8s and helm providers, but I didn't have time for that unfortunately.
 7. metrics are exposed at [url]/prometheus/metrics
 
 <h4>DEV SETUP</h4>
+The dev setup graph can be found at ./diagrams/graph-dev.png
 
 ```
 kubectl create ns dev
@@ -58,6 +59,9 @@ kubectl create secret generic mongodb-secret \
 --from-literal mongo-password=${MONGODB_PASSWORD} --namespace dev
 
 cd ./cd/infra
+###if you have a linkerd installed 
+kubectl kustomize dev/ --enable-helm | linkerd inject - | kubectl apply -f -
+###if not
 kubectl kustomize dev/ --enable-helm | kubectl apply -f -
 ```
 
@@ -69,6 +73,7 @@ sudo sh -c "echo '127.0.0.1 nodeapp-dev.local nodeapp-prod.local' >> /etc/hosts"
 
 
 <h3>PROD</h3>
+The prod setup graph can be found at ./diagrams/graph-prod.png
 
 ```
 kubectl create ns prod
@@ -81,6 +86,9 @@ kubectl create secret generic mongodb-secret \
 --from-literal mongo-password=${MONGODB_PASSWORD} --namespace prod
 
 cd ./cd/infra
+###if you have a linkerd installed 
+kubectl kustomize prod/ --enable-helm | linkerd inject - | kubectl apply -f -
+###if not
 kubectl kustomize prod/ --enable-helm | kubectl apply -f -
 ```
 
