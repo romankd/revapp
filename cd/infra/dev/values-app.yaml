@@ -1,0 +1,2 @@
+mongo:
+  path: "mongo-dev-0.mongo-dev.dev.svc.cluster.local"

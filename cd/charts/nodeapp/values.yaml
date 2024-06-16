@@ -3,7 +3,7 @@ replicaCount: 2
 image:
   repository: romankd/revapp
   pullPolicy: IfNotPresent
-  tag: "9531254193"
+  tag: "9531359954"
 
 mongo:
   path: "mongo-0.mongo.dev.svc.cluster.local"
@@ -13,8 +13,7 @@ selectorLabels:
   app: nodejs
 
 securityContext:
-  runAsRoot: false
-  runAsUser: 100
+  runAsUser: 1000
   allowPrivilegeEscalation: false
 
 service:

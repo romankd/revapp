@@ -4,12 +4,6 @@ kind: Kustomization
 helmGlobals:
   chartHome: ../../charts
 helmCharts:
-- releaseName: nodeapp
-  namespace: dev
-  name: nodeapp
-  valuesFile: values.yaml
-  # valuesInline:
-  #   ingress:
-  #     enabled: true
-
-namespace: base
+- releaseName: mongodb
+  name: mongodb
+  valuesFile: values-mongo.yaml

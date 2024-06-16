@@ -6,10 +6,10 @@ metadata:
   labels:
     {{- include "mongodb.labels" . | nindent 4 }}
 spec:
+  serviceName: "mongo"
   selector:
     matchLabels:
       {{- include "mongodb.selectorLabels" . | nindent 6 }}
-  serviceName: "mongo"
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
@@ -17,14 +17,18 @@ spec:
         {{- include "mongodb.labels" . | nindent 8 }}
     spec:
       securityContext:
-        allowPrivilegeEscalation: false
-        runAsRoot: false
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 2000
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: mongo-sidecar
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          securityContext:
+            allowPrivilegeEscalation: false
           resources:
             limits:
               cpu: 200m
@@ -61,7 +65,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: SERVICENAME
-              value: {{ include "mongodb.fullname" . }}
+              value: {{ include "mongodb.name" . }}
           command: ["/bin/bash", "-c", "/opt/initialization.sh && tail -f /dev/null"]
         - name: mongo
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

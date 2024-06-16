@@ -1,0 +1,7 @@
+mongo:
+  path: "mongo-prod-0.mongo-prod.prod.svc.cluster.local"
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 6
