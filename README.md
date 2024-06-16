@@ -48,6 +48,7 @@ PRE REQS
 7. metrics are exposed at [URL]/prometheus/metrics
 
 <h4>DEV SETUP</h4>
+
 The dev setup graph can be found at [./diagrams/graph-dev.png](https://github.com/romankd/revapp/blob/main/diagrams/graph-dev.png)
 
 ```
@@ -77,6 +78,7 @@ Applciation is gonna be available at nodeapp-dev.local
 
 
 <h4>PROD</h4>
+
 The prod setup graph can be found at [./diagrams/graph-prod.png](https://github.com/romankd/revapp/blob/main/diagrams/graph-prod.png)
 
 ```
