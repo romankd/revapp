@@ -5,7 +5,7 @@ fullnameOverride: nodeapp
 image:
   repository: romankd/revapp
   pullPolicy: IfNotPresent
-  tag: "9536934817"
+  tag: "9537205780"
 
 mongo:
   path: "mongo-0.mongo.dev.svc.cluster.local"
@@ -55,8 +55,8 @@ livenessProbe:
   httpGet:
     path: /health
     port: 3000
-  initialDelaySeconds: 15
-  timeoutSeconds: 1
+  initialDelaySeconds: 5
+  timeoutSeconds: 2
   periodSeconds: 30
   failureThreshold: 3
   
@@ -64,8 +64,8 @@ readinessProbe:
   httpGet:
     port: 3000
     path: /ready
-  initialDelaySeconds: 15
-  timeoutSeconds: 1
+  initialDelaySeconds: 5
+  timeoutSeconds: 2
   periodSeconds: 10
   successThreshold: 3
   failureThreshold: 3
