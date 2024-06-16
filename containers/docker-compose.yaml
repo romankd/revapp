@@ -40,7 +40,10 @@ services:
         condition: service_completed_successfully
       mongodb:
         condition: service_healthy
-    build: ./app
+    build: 
+      context: ./app
+      args:
+        app_build_verion: localbuild
     restart: unless-stopped
     networks:
       - app-network

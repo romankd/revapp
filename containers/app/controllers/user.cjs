@@ -1,5 +1,7 @@
-const UserModel = require('../models/user.cjs');
-const util = require('util');
+const UserModel = require('../models/user.cjs')
+, util = require('util')
+, promConfig = require('../configs/prometheus.cjs')
+, app_version = process.env.APP_VERSION;
 
 exports.create = async (req, res) => {
     const username = req.params.username
@@ -21,8 +23,11 @@ exports.create = async (req, res) => {
             console.log("Index dublication error")
             res.status(404).setHeader('Content-Type', 'application/json').json({ message:  "User already exists"}).send();
         } else {
-            //sending metrics to monitoring system and
-            //alerting because this means database isn't responding properly
+            promConfig
+                .custom_metrics
+                .uncaught_db_errors_counter
+                .inc({ method: req.method, path: req.originalUrl, statusCode: '500', NODE_APP_VERSION: app_version });
+
             console.log(error)
             res.status(500).setHeader('Content-Type', 'application/json').send();
         }

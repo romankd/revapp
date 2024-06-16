@@ -1,6 +1,6 @@
 <h3>Summary</h3>
 
-1. Task number 1 is located in the path ./containers/app/
+1. Task number 1 is located in the path ./containers/app/ , CI flow is located in .github/workflows/ci-workflow.yaml
 2. Task number 2 is located in the path ./cloudflow.drawio.png
 3. Task number 3 is located in the path ./cd/infra
 

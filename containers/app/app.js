@@ -7,7 +7,8 @@ const express = require('express')
 , probeController = require('./controllers/probe.cjs')
 , userValidator = require('./validators/user.cjs')
 , dbConfig = require('./configs/database.cjs')
-, hostConfig = require('./configs/host.cjs');
+, hostConfig = require('./configs/host.cjs')
+, promConfig = require('./configs/prometheus.cjs');
 
 const app = express();
 app.use(bodyParser.json());
@@ -29,6 +30,13 @@ router.get('/:username', [
 var router_checks = express.Router();
 router_checks.get('/health', probeController.checkUp);
 router_checks.get('/ready', probeController.checkUp);
+
+
+app.get("/metrics", async (req, res, next) => {
+  res.setHeader("Content-type", promConfig.promRegister.contentType);
+  res.send(await promConfig.promRegister.metrics());
+  next();
+});
 
 app.use('/hello', router);
 app.use('/', router_checks);

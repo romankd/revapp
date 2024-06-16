@@ -1,5 +1,6 @@
 export
-*/npm_modules
+*/node_module
+containers/app/node_modules/*
 npm_modules
 containers/.envdev
 containers/.env

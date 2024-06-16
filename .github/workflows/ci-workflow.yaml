@@ -28,20 +28,12 @@ jobs:
     - name: Cleaning volumes
       run: docker volume prune -f
 
-    # - name: Cache Docker
-    #   id: cache_docker
-    #   if: ${{ success() }}
-    #   uses: actions/cache@v4
-    #   with:
-    #     path: ${{ env.CACHE_PATH }}
-    #     key: ${{ runner.os }}-buildx-${{ github.sha }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-buildx-
-    
     - name: Build and export
       uses: docker/build-push-action@v5
       with:
         context: ./containers/app
+        build-args: |
+            app_build_verion=${{ github.run_id }}
         tags: ${{ env.APP_IMAGE }}
         outputs: type=docker,dest=/tmp/appimage.tar
     
@@ -51,21 +43,6 @@ jobs:
         name: appimage
         path: /tmp/appimage.tar
     
-    # - name: Docker image build
-    #   if: ${{ success() }}
-    #   run: |
-    #     docker buildx build --load  \
-    #       -t ${{ env.APP_IMAGE }} --cache-to=type=local,dest=${{ env.CACHE_PATH }} \
-    #       --cache-from=type=local,src=${{ env.CACHE_PATH }} \
-    #       -f ./containers/app/Dockerfile ./containers/app
-
-    # - name: Docker image build
-    #   if: ${{ success() }}
-    #   run: |
-    #     docker build  \
-    #       -t ${{ env.APP_IMAGE }} \
-    #       -f ./containers/app/Dockerfile ./containers/app
-
   security_check:
     runs-on: ubuntu-latest
     needs: build
