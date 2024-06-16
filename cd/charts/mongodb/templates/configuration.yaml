@@ -35,7 +35,11 @@ data:
             echo "waiting for mongo boot."
             sleep 1
         done
-        echo "registering itself"
+
+        until mongosh --host ${MASTER} --eval 'printjson(rs.status())' 2>&1 | grep "PRIMARY"; do
+            echo "waiting for mongo master to create replicaset config."
+            sleep 1
+        done
         mongosh --host ${MASTER} --eval "printjson(rs.add('${HOST}'));"
     fi
 

@@ -40,4 +40,4 @@ patches:
       value: nodeapp-prod.local
   target:
     kind: Ingress
-    name: release-name-nodeapp
+    name: nodeapp

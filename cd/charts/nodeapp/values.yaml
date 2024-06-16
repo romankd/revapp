@@ -1,9 +1,11 @@
 replicaCount: 2
 
+fullnameOverride: nodeapp
+
 image:
   repository: romankd/revapp
   pullPolicy: IfNotPresent
-  tag: "9531359954"
+  tag: "9536934817"
 
 mongo:
   path: "mongo-0.mongo.dev.svc.cluster.local"
