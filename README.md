@@ -1,8 +1,8 @@
 <h3>Summary</h3>
 
-1. Task number 1 is located in the path ./containers/app/ , CI flow is located in .github/workflows/ci-workflow.yaml
-2. Task number 2 is located in the path ./diagrams/cloudflow.drawio.png
-3. Task number 3 is located in the path ./cd/infra
+1. Task number 1 is located in the path [./containers/app/](https://github.com/romankd/revapp/tree/main/containers/app), CI flow is located in [.github/workflows/ci-workflow.yaml](https://github.com/romankd/revapp/blob/main/.github/workflows/ci-workflow.yaml)
+2. Task number 2 is located in the path [./diagrams/cloudflow.drawio.png](https://github.com/romankd/revapp/blob/main/diagrams/cloudflow.drawio.png)
+3. Task number 3 is located in the path [./cd/infra](https://github.com/romankd/revapp/tree/main/cd/infra)
 
 
 <h4>Variables dump you might need for testing purposes</h4>
