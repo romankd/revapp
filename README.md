@@ -28,6 +28,8 @@ cd ./containers
 docker compose --env-file=.devenv up --build
 ```
 
+Applciation is gonna be available at http://localhost:3000/
+
 <h4>Shutting down</h4>
 
 ```
@@ -43,10 +45,10 @@ PRE REQS
 4. run kustomize and kubectl to apply the structure per environment that can be deployed incrementally without downtime (as speciafied in the task)
 5. prod and dev have a different configuration.
 6. ideal finish for this part would have been a terraform deploy to k8s cluster using k8s and helm providers, but I didn't have time for that unfortunately.
-7. metrics are exposed at [url]/prometheus/metrics
+7. metrics are exposed at [URL]/prometheus/metrics
 
 <h4>DEV SETUP</h4>
-The dev setup graph can be found at ./diagrams/graph-dev.png
+The dev setup graph can be found at [./diagrams/graph-dev.png](https://github.com/romankd/revapp/blob/main/diagrams/graph-dev.png)
 
 ```
 kubectl create ns dev
@@ -71,9 +73,11 @@ If running locally (you might need to use sudo)
 sudo sh -c "echo '127.0.0.1 nodeapp-dev.local nodeapp-prod.local' >> /etc/hosts"
 ```
 
+Applciation is gonna be available at nodeapp-dev.local
 
-<h3>PROD</h3>
-The prod setup graph can be found at ./diagrams/graph-prod.png
+
+<h4>PROD</h4>
+The prod setup graph can be found at [./diagrams/graph-prod.png](https://github.com/romankd/revapp/blob/main/diagrams/graph-prod.png)
 
 ```
 kubectl create ns prod
@@ -92,6 +96,8 @@ kubectl kustomize prod/ --enable-helm | linkerd inject - | kubectl apply -f -
 kubectl kustomize prod/ --enable-helm | kubectl apply -f -
 ```
 
+Applciation is gonna be available at nodeapp-prod.local
+
 <h4>Cleanup</h4>
 
 ```
@@ -106,4 +112,5 @@ kubectl delete -n dev pvc --all
 kubectl delete -n prod pvc --all
 kubectl delete ns dev
 kubectl delete ns prod
+###Remove nodeapp-dev.local nodeapp-prod.local records from /etc/hosts file.
 ```
