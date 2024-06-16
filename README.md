@@ -41,7 +41,8 @@ PRE REQS
 3. a basic secret (used for both mongo and application) per environment, use the command below to create it.
 4. run kustomize and kubectl to apply the structure per environment that can be deployed incrementally without downtime (as speciafied in the task)
 5. prod and dev have a different configuration
-6. ideal finish for this part would have been a terraform deploy to k8s cluster using k8s and helm providers, but I didn't have time for that unfortunately. 
+6. ideal finish for this part would have been a terraform deploy to k8s cluster using k8s and helm providers, but I didn't have time for that unfortunately.
+7. metrics are exposed on [url]/prometheus/metrics
 
 <h4>DEV SETUP</h4>
 
